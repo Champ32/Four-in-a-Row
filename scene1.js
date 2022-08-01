@@ -4,8 +4,12 @@ class Scene1 extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image("background", "assets/gameboard.png");
+    this.load.image("background", "assets/images/gameboard.png");
 
   
+  }
+  create(){
+    this.add.text(20,20,"Loading game...")
+    this.scene.start("playGame")
   }
 }
