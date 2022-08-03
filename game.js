@@ -1,3 +1,5 @@
+const turnText = document.getElementById(`playerTurn`);
+
 var config = {
     width: 650,
     height: 550,
@@ -42,9 +44,11 @@ function update() {
     if (enemyTurn) {
         pieceColor = 'yellow';
         playerValue = 2;
+        turnText.textContent = "Player 2's Turn";
     } else {
         pieceColor = 'red';
         playerValue = 1;
+        turnText.textContent = "Player 1's Turn";
     }
     if (timeout <= 0) {
         // finding the player's cursor
