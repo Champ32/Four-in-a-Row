@@ -77,6 +77,13 @@ function isWinner(board, player) {
     return false;
 }
 
+function boardFull(board) {
+    for (var j = 0; j < 7; j++) {
+        if (board[0][j] == 0) return false;
+    }
+    return true;
+}
+
 function create() {
     initBoard();
     bg_color = this.add.sprite(0, 0, 'bg-color').setOrigin(0,0); 
@@ -131,6 +138,9 @@ function update() {
 
         if (isWinner(board, playerValue)) {
             turnText.textContent = `Player ${playerValue} is the Winner!!`;
+            gameDone = true;
+        } else if (boardFull(board)) {
+            turnText.textContent = `Draw!`;
             gameDone = true;
         }
     }
