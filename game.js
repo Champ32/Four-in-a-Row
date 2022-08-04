@@ -16,7 +16,9 @@ var xList = [31, 115, 199, 283, 367, 451, 535];
 var yList = [23, 107, 191, 275, 359, 443];
 var enemyTurn = false;
 var gameDone = false;
+var singlePlayer = false;
 var piece;
+var hasControl = true;
 var timeout = 0;
 var game = new Phaser.Game(config);
 
@@ -84,6 +86,103 @@ function boardFull(board) {
     return true;
 }
 
+// AI code created by iammanish17
+function sectionScore(section, player) {    
+    // Assigns a score to a section based on how likely player is to win/lose
+    var score = 0;          
+    var selfCount = 0,      
+        opponentCount = 0,  
+        empty = 0;          
+
+    for (var i = 0; i < 4; i++) {   
+        if (section[i] == player) selfCount++;             
+        else if (section[i] == 3 - player) opponentCount++; 
+        else empty++;                                       
+    }
+
+    if (selfCount == 4) score += 100;                   
+    if (selfCount == 3 && empty == 1) score += 5;       
+    if (selfCount == 2 && empty == 2) score += 2;       
+    if (opponentCount == 3 && empty == 1) score -= 4;   
+
+    return score;
+}
+
+function getScore(board, player) {  
+    // Function to assign a score to a board
+    var score = 0;
+    var sections = getSections(board);
+
+    for (var i = 0; i < sections.length; i++)  
+        score += sectionScore(sections[i], player);    
+
+    for (var i = 0; i < 6; i++)     
+        if (board[i][3] == player) score += 3; 
+
+    return score;
+}
+
+function miniMax(board, depth, alpha, beta, player) {
+    // Minimax Algorithm for AI to recursively find an optimal move
+    if (isWinner(board, 2)) return [-1, 99999999];
+    if (isWinner(board, 1)) return [-1, -99999999];
+    if (boardFull(board)) return [-1, 0];
+    if (depth == 0) return [-1, getScore(board, 2)];
+
+    if (player == 2) {
+        // Maximizing player
+        var value = Number.NEGATIVE_INFINITY;
+        var col = -1;
+        for (var i = 0; i < 7; i++) {
+            if (board[0][i] == 0) {
+                var boardCopy = new Array(6);
+                for (var k = 0; k < board.length; k++)
+                    boardCopy[k] = board[k].slice();
+                var j = 5;
+                for (j; j >= 0; j--) {
+                    if (boardCopy[j][i] == 0)
+                        break;
+                }
+                boardCopy[j][i] = player;
+                var newScore = miniMax(boardCopy, depth - 1, alpha, beta, 3 - player)[1];
+                if (newScore > value) {
+                    value = newScore;
+                    col = i;
+                }
+                alpha = Math.max(alpha, value);
+                if (alpha >= beta) break;
+            }
+        }
+        return [col, value];
+    } else {
+        // Minimizing player
+        var value = Number.POSITIVE_INFINITY;
+        var col = -1;
+        for (var i = 0; i < 7; i++) {
+            if (board[0][i] == 0) {
+                var boardCopy = new Array(6);
+                for (var k = 0; k < board.length; k++)
+                    boardCopy[k] = board[k].slice();
+                var j = 5;
+                for (j; j >= 0; j--) {
+                    if (boardCopy[j][i] == 0)
+                        break;
+                }
+                boardCopy[j][i] = player;
+                var newScore = miniMax(boardCopy, depth - 1, alpha, beta, 3 - player)[1];
+                if (newScore < value) {
+                    value = newScore;
+                    col = i;
+                }
+                beta = Math.min(beta, value);
+                if (alpha >= beta) break;
+            }
+        }
+        return [col, value];
+    }
+}
+// End of AI code
+
 function create() {
     initBoard();
     bg_color = this.add.sprite(0, 0, 'bg-color').setOrigin(0,0); 
@@ -134,6 +233,10 @@ function update() {
                     break;
                 }
             }
+        }
+
+        if (singlePlayer && enemyTurn) {
+            
         }
 
         if (isWinner(board, playerValue)) {
