@@ -15,6 +15,7 @@ var board = new Array(6); // Board variable to keep track of available slots.
 var xList = [31, 115, 199, 283, 367, 451, 535];
 var yList = [23, 107, 191, 275, 359, 443];
 var enemyTurn = false;
+var gameDone = false;
 var piece;
 var timeout = 0;
 var game = new Phaser.Game(config);
@@ -31,6 +32,50 @@ function initBoard() {  // initalize the board coordinates.
     }
 }
 
+function getSections(board) {
+    var sections = new Array();
+    // horizontal sections
+    for (var j = 0; j < 4; j++){
+        for (var i = 0; i<6; i++) {
+            sections.push([board[i][j], board[i][j+1], board[i][j+2], board[i][j+3]]);
+        }
+    }
+    // vertical sections
+    for (var i = 0; i < 3; i++) {
+        for (var j = 0; j < 7; j++) {
+            sections.push([board[i][j], board[i+1][j], board[i+2][j], board[i+3][j]]);
+        }
+    }
+    // forward-diagonal
+    for (var i = 0; i < 3; i++) {
+        for (var j = 0; j < 4; j++) {
+            sections.push([board[i][j], board[i+1][j+1], board[i+2][j+2], board[i+3][j+3]]);
+        }
+    }
+    // backward-diagonal
+    for (var i = 3; i < 6; i++) {
+        for (var j = 0; j < 4; j++) {
+            sections.push([board[i][j], board[i-1][j+1], board[i-2][j+2], board[i-3][j+3]]);
+        }
+    }
+
+    return sections; 
+}
+
+function isWinner(board, player) {
+    var sections = getSections(board);
+    for (i = 0; i < sections.length; i++) {
+        var possible = true;
+        for (j = 0; j < 4; j++) {
+            if (sections[i][j] != player) {
+                possible = false;
+            }
+        }
+        if (possible) return true;
+    }
+    return false;
+}
+
 function create() {
     initBoard();
     bg = this.add.sprite(325, 275, 'background');
@@ -41,6 +86,9 @@ function update() {
     var playerValue;
     game.canvas.style.cursor = "default";
     timeout--;
+
+    if (gameDone) return;
+
     if (enemyTurn) {
         pieceColor = 'yellow';
         playerValue = 2;
@@ -50,6 +98,7 @@ function update() {
         playerValue = 1;
         turnText.textContent = "Player 1's Turn";
     }
+
     if (timeout <= 0) {
         // finding the player's cursor
         var mouse = this.input.activePointer;
@@ -76,6 +125,11 @@ function update() {
                     break;
                 }
             }
+        }
+
+        if (isWinner(board, playerValue)) {
+            turnText.textContent = `Player ${playerValue} is the Winner!!`;
+            gameDone = true;
         }
     }
 }
