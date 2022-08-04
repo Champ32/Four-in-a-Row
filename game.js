@@ -21,6 +21,7 @@ var timeout = 0;
 var game = new Phaser.Game(config);
 
 function preload() {
+    this.load.image('bg-color', 'assets/bg_color.png');
     this.load.image('background', 'assets/background.png');
     this.load.image('red', 'assets/red2.png');
     this.load.image('yellow', 'assets/yellow2.png');
@@ -78,7 +79,8 @@ function isWinner(board, player) {
 
 function create() {
     initBoard();
-    bg = this.add.sprite(325, 275, 'background');
+    bg_color = this.add.sprite(0, 0, 'bg-color').setOrigin(0,0); 
+    bg = this.add.sprite(325, 275, 'background'); 
 }
 
 function update() {
