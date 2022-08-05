@@ -1,5 +1,11 @@
 const turnText = document.getElementById(`playerTurn`);
 
+const startSection = document.getElementById(`startSection`);
+const playerSelection = document.getElementById(`playerSelect`);
+const player = document.getElementById(`players`);
+
+const restartButton = document.getElementById(`restart`);
+
 var config = {
     width: 650,
     height: 550,
@@ -18,7 +24,7 @@ var enemyTurn = false;
 var gameDone = false;
 var singlePlayer = true;
 var piece;
-var hasControl = true;
+var hasControl = false;
 var timeout = 0;
 var game = new Phaser.Game(config);
 
@@ -189,6 +195,26 @@ function create() {
     bg = this.add.sprite(325, 275, 'background'); 
 }
 
+playerSelection.addEventListener('submit', function(event) {
+    event.preventDefault();
+    if (player.value == 'single'){
+        singlePlayer = true;
+    } else if (player.value == 'multi'){
+        singlePlayer = false;
+    }
+    turnText.removeAttribute('hidden');
+    restartButton.removeAttribute('hidden');
+    hasControl = true;
+    startSection.setAttribute('hidden', 'true')
+})
+
+restartButton.addEventListener('click', function() {
+    game.scene.stop('default');
+    game.scene.start('default');
+    gameDone = false;
+    enemyTurn = false;
+})
+
 function update() {
     var pieceColor;
     var playerValue;
@@ -207,7 +233,7 @@ function update() {
         turnText.textContent = "Player 1's Turn";
     }
 
-    if (timeout <= 0) {
+    if (timeout <= 0 && hasControl) {
         // finding the player's cursor
         var mouse = this.input.activePointer;
         var column = -1;
