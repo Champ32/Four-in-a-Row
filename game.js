@@ -1,13 +1,9 @@
-const { Phaser } = require("./phaser.min")
 
-var gameSettings = {
-
-}
 var config ={
-width:256,
-height:272,
-backgroundColor: 0x000000,
-scene:[Scene1,Scene2]
+width:650,
+height:550,
+scene:[LoadScene,MenuScene,Scene1],
+
 
 }
 
