@@ -8,7 +8,17 @@
     <script type="text/javascript" src="phaser.min.js"></script>
   </head>
   <body>
-    <div id="playerTurn"></div><br>
+    <div id="startSection">
+      <form id="playerSelect">
+        <select id="players">
+          <option value="single">Singleplayer</option>
+          <option value="multi">Multiplayer</option>
+        </select>
+        <input type="submit" value="Play!">
+      </form>
+      <br></div>
+    <div id="playerTurn" hidden="true"></div><br>
+    <button type="button" id="restart" hidden="true">Restart</button><br>
     <script type="text/javascript" src="game.js"></script>
   </body>
 </html>
